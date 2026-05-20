@@ -603,6 +603,7 @@ function AppShell({
       });
       if (error) throw error;
       setDraft('');
+      await loadMessages();
       await channelRef.current?.track({ username: profile.username, typing: false });
     } catch (error) {
       onStatus({ tone: 'error', text: error instanceof Error ? error.message : 'Message failed.' });
