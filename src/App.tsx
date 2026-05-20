@@ -14,6 +14,7 @@ import {
   Shield,
   Sparkles,
   Terminal,
+  Trash2,
   UserPlus,
   Users,
 } from 'lucide-react';
@@ -721,9 +722,21 @@ function AppShell({
                   {latestKey ? `ENC_KEY_V${latestKey.version} [ACTIVE]` : 'WAITING FOR SYNC...'}
                 </p>
               </div>
-              <div className="flex items-center gap-2 rounded border border-emerald-400/30 bg-emerald-950/40 px-3 py-1 font-mono text-xs text-emerald-300 tracking-widest shadow-[0_0_10px_rgba(52,211,153,0.1)]">
-                <Activity size={14} className="animate-pulse" />
-                {presenceList.length + 1} ON
+              <div className="flex items-center gap-3">
+                {profile.role === 'admin' && activeRoom && (
+                  <button
+                    onClick={() => void deleteRoom(activeRoom.id)}
+                    title="Permanently Delete Room"
+                    className="hidden sm:flex items-center gap-2 rounded border border-rose-500/30 bg-rose-950/40 px-3 py-1 font-mono text-xs text-rose-300 tracking-widest shadow-[0_0_10px_rgba(244,114,182,0.1)] hover:bg-rose-900/60 hover:text-white transition uppercase"
+                  >
+                    <Trash2 size={14} className="animate-pulse" />
+                    Delete
+                  </button>
+                )}
+                <div className="flex items-center gap-2 rounded border border-emerald-400/30 bg-emerald-950/40 px-3 py-1 font-mono text-xs text-emerald-300 tracking-widest shadow-[0_0_10px_rgba(52,211,153,0.1)]">
+                  <Activity size={14} className="animate-pulse" />
+                  {presenceList.length + 1} ON
+                </div>
               </div>
             </div>
           </div>
@@ -878,6 +891,18 @@ function AppShell({
       await Promise.all([loadMembers(), loadRoomKeys()]);
     } catch (error) {
       onStatus({ tone: 'error', text: error instanceof Error ? error.message : 'Member removal failed.' });
+    }
+  }
+
+  async function deleteRoom(roomId: string) {
+    if (!window.confirm('CRITICAL WARNING: This will permanently delete the room and ALL its messages for everyone. Proceed?')) return;
+    try {
+      const { error } = await supabase.from('rooms').delete().eq('id', roomId);
+      if (error) throw error;
+      onStatus({ tone: 'ok', text: 'Room and all data deleted.' });
+      window.location.reload(); // Hard reload to clear all states cleanly
+    } catch (error) {
+      onStatus({ tone: 'error', text: error instanceof Error ? error.message : 'Room deletion failed.' });
     }
   }
 }
