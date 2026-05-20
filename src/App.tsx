@@ -488,9 +488,9 @@ function AppShell({
     });
   }, [loadMembers, loadMessages, onStatus]);
 
-  // Automated background key sync
+  // Automated background key sync (runs periodically to ensure all active members have keys)
   useEffect(() => {
-    if (rooms.length === 0 || Object.keys(profiles).length === 0 || Object.keys(roomKeys).length === 0) return;
+    if (rooms.length === 0 || Object.keys(roomKeys).length === 0) return;
 
     const autoSync = async () => {
       try {
@@ -499,6 +499,11 @@ function AppShell({
           .select('*')
           .eq('active', true);
         if (membersError) return;
+
+        // Fetch ALL profiles to ensure we have the latest public keys for new users
+        const { data: profileRows, error: profilesError } = await supabase.from('profiles').select('*');
+        if (profilesError) return;
+        const currentProfiles = Object.fromEntries(((profileRows || []) as Profile[]).map((item) => [item.id, item]));
 
         const { data: shareRows, error: sharesError } = await supabase
           .from('room_key_shares')
@@ -517,7 +522,7 @@ function AppShell({
           const roomMembers = (memberRows || []).filter((member) => member.room_id === room.id);
           for (const member of roomMembers) {
             const shareKey = `${room.id}:${member.user_id}:${latest.version}`;
-            const recipient = profiles[member.user_id];
+            const recipient = currentProfiles[member.user_id];
             if (shareSet.has(shareKey) || !recipient?.public_key_jwk) continue;
 
             const wrapped = await wrapRoomKey(latest.key, recipient.public_key_jwk);
@@ -537,18 +542,23 @@ function AppShell({
 
         if (createdCount > 0) {
           await loadRoomKeys();
+          // We also refresh local state so the admin UI updates
+          setProfiles(currentProfiles);
+          setMembers((memberRows || []) as RoomMember[]);
         }
       } catch (e) {
         console.error('Background key sync error:', e);
       }
     };
 
-    const timer = setTimeout(() => {
+    // Run immediately, then every 5 seconds
+    void autoSync();
+    const interval = setInterval(() => {
       void autoSync();
-    }, 2000); // 2s delay after updates to avoid blocking the main UI thread
+    }, 5000);
 
-    return () => clearTimeout(timer);
-  }, [rooms, profiles, roomKeys, members, session.user.id, loadRoomKeys]);
+    return () => clearInterval(interval);
+  }, [rooms, roomKeys, session.user.id, loadRoomKeys]);
 
   useEffect(() => {
     if (!activeRoom) return;
