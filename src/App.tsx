@@ -94,11 +94,11 @@ function Button(props: {
       className={cx(
         'inline-flex h-10 items-center justify-center gap-2 rounded border px-4 font-mono text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40',
         props.variant === 'ghost' &&
-          'border-cyan-400/20 bg-slate-950/40 text-cyan-100 hover:border-cyan-300/60 hover:bg-cyan-300/10',
+          'border-cyan-400/20 bg-slate-950/40 text-cyan-100 hover:border-cyan-300/60 hover:bg-cyan-300/10 hover:glow-border-cyan',
         props.variant === 'danger' &&
           'border-rose-400/40 bg-rose-500/10 text-rose-100 hover:bg-rose-500/20',
         (!props.variant || props.variant === 'primary') &&
-          'border-cyan-300/70 bg-cyan-300 text-slate-950 hover:bg-cyan-200',
+          'border-cyan-300/70 bg-cyan-300 text-slate-950 hover:bg-cyan-200 hover:glow-border-cyan',
       )}
     >
       {props.children}
@@ -108,7 +108,7 @@ function Button(props: {
 
 function Panel(props: { children: React.ReactNode; className?: string }) {
   return (
-    <section className={cx('rounded-lg border border-cyan-400/15 bg-slate-950/70 shadow-terminal', props.className)}>
+    <section className={cx('glass-panel rounded-xl', props.className)}>
       {props.children}
     </section>
   );
@@ -236,21 +236,22 @@ function AuthScreen({
   }
 
   return (
-    <div className="grid min-h-screen place-items-center bg-grid p-4 text-cyan-50">
-      <Panel className="w-full max-w-lg p-5">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <div>
-            <div className="mb-2 flex items-center gap-2 font-mono text-sm uppercase tracking-[0.25em] text-cyan-300">
-              <Shield size={18} /> CyberChat
-            </div>
-            <h1 className="font-mono text-3xl font-bold text-white">secure channel</h1>
+    <div className="grid min-h-screen place-items-center bg-grid p-4 text-cyan-50 relative">
+      <div className="scanlines" />
+      <Panel className="w-full max-w-lg p-8 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-70 animate-pulse-glow" />
+        
+        <div className="mb-10 flex flex-col items-center justify-center gap-4 text-center">
+          <div className="flex items-center gap-3 text-cyan-300">
+            <Shield size={32} className="animate-pulse-glow" />
+            <h1 className="font-mono text-4xl font-bold tracking-[0.2em] uppercase text-white glow-text-cyan">CyberChat</h1>
           </div>
-          <div className="rounded border border-emerald-300/30 bg-emerald-400/10 px-3 py-2 font-mono text-xs text-emerald-200">
-            E2EE ON
+          <div className="rounded border border-emerald-300/30 bg-emerald-400/10 px-3 py-1 font-mono text-xs text-emerald-200 tracking-widest uppercase animate-pulse">
+            E2EE Secured Channel
           </div>
         </div>
 
-        <div className="mb-5 grid grid-cols-3 gap-2 rounded border border-cyan-400/15 bg-slate-950 p-1">
+        <div className="mb-8 grid grid-cols-3 gap-2 rounded border border-cyan-400/15 bg-slate-950/80 p-1">
           {[
             ['login', 'Login'],
             ['claim', 'Claim Invite'],
@@ -261,8 +262,8 @@ function AuthScreen({
               type="button"
               onClick={() => setMode(key as 'login' | 'claim' | 'admin')}
               className={cx(
-                'h-9 rounded font-mono text-xs font-semibold uppercase tracking-wider transition',
-                mode === key ? 'bg-cyan-300 text-slate-950' : 'text-cyan-200 hover:bg-cyan-300/10',
+                'h-10 rounded font-mono text-xs font-semibold uppercase tracking-widest transition',
+                mode === key ? 'bg-cyan-300 text-slate-950 glow-border-cyan' : 'text-cyan-200/70 hover:bg-cyan-300/10 hover:text-cyan-100',
               )}
             >
               {label}
@@ -270,7 +271,7 @@ function AuthScreen({
           ))}
         </div>
 
-        <form className="grid gap-4" onSubmit={handleAuth}>
+        <form className="grid gap-6" onSubmit={handleAuth}>
           <Field label="Username" value={username} onChange={setUsername} required />
           {mode !== 'login' && <Field label="Display name" value={displayName} onChange={setDisplayName} required />}
           {mode === 'claim' && <Field label="Invite code" value={inviteCode} onChange={setInviteCode} required />}
@@ -287,7 +288,7 @@ function AuthScreen({
           )}
           <Button type="submit" disabled={busy}>
             <ArrowRight size={16} />
-            {busy ? 'Working...' : mode === 'login' ? 'Enter' : 'Create secure identity'}
+            {busy ? 'Working...' : mode === 'login' ? 'Establish Connection' : 'Create Secure Identity'}
           </Button>
         </form>
       </Panel>
@@ -325,19 +326,26 @@ function VaultUnlock({
 
   return (
     <div className="grid min-h-screen place-items-center bg-grid p-4 text-cyan-50">
-      <Panel className="w-full max-w-md p-5">
-        <div className="mb-6 flex items-center gap-3">
-          <KeyRound className="text-cyan-300" />
+      <div className="scanlines" />
+      <Panel className="w-full max-w-md p-8 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-70 animate-pulse-glow" />
+        <div className="mb-8 flex flex-col items-center gap-4 text-center">
+          <div className="relative">
+            <div className="absolute inset-0 rounded-full glow-border-cyan opacity-50 animate-ping" style={{ animationDuration: '3s' }} />
+            <div className="relative grid size-16 place-items-center rounded-full border border-cyan-400/30 bg-slate-950/80">
+              <KeyRound className="text-cyan-300 animate-pulse-glow" size={32} />
+            </div>
+          </div>
           <div>
-            <h1 className="font-mono text-2xl font-bold">unlock vault</h1>
-            <p className="text-sm text-slate-400">Your private key decrypts only in this browser.</p>
+            <h1 className="font-mono text-2xl font-bold uppercase tracking-widest glow-text-cyan text-white">Vault Locked</h1>
+            <p className="mt-2 text-sm text-cyan-200/60 font-mono">Identity verification required</p>
           </div>
         </div>
-        <form className="grid gap-4" onSubmit={unlock}>
-          <Field label="Vault passphrase" type="password" value={passphrase} onChange={setPassphrase} required />
+        <form className="grid gap-6" onSubmit={unlock}>
+          <Field label="Passphrase" type="password" value={passphrase} onChange={setPassphrase} required />
           <Button type="submit" disabled={busy}>
             <Shield size={16} />
-            {busy ? 'Decrypting...' : 'Unlock'}
+            {busy ? 'Decrypting Local Identity...' : 'Initialize Decryption'}
           </Button>
         </form>
       </Panel>
@@ -350,12 +358,14 @@ function AppShell({
   profile,
   identity,
   onSignOut,
+  onLock,
   onStatus,
 }: {
   session: Session;
   profile: Profile;
   identity: CryptoIdentity;
   onSignOut: () => void;
+  onLock: () => void;
   onStatus: (status: Status) => void;
 }) {
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -478,6 +488,68 @@ function AppShell({
     });
   }, [loadMembers, loadMessages, onStatus]);
 
+  // Automated background key sync
+  useEffect(() => {
+    if (rooms.length === 0 || Object.keys(profiles).length === 0 || Object.keys(roomKeys).length === 0) return;
+
+    const autoSync = async () => {
+      try {
+        const { data: memberRows, error: membersError } = await supabase
+          .from('room_members')
+          .select('*')
+          .eq('active', true);
+        if (membersError) return;
+
+        const { data: shareRows, error: sharesError } = await supabase
+          .from('room_key_shares')
+          .select('room_id, user_id, key_version');
+        if (sharesError) return;
+
+        const shareSet = new Set(
+          (shareRows || []).map((share) => `${share.room_id}:${share.user_id}:${share.key_version}`),
+        );
+
+        let createdCount = 0;
+        for (const room of rooms) {
+          const latest = latestRoomKey(roomKeys[room.id]);
+          if (!latest) continue;
+
+          const roomMembers = (memberRows || []).filter((member) => member.room_id === room.id);
+          for (const member of roomMembers) {
+            const shareKey = `${room.id}:${member.user_id}:${latest.version}`;
+            const recipient = profiles[member.user_id];
+            if (shareSet.has(shareKey) || !recipient?.public_key_jwk) continue;
+
+            const wrapped = await wrapRoomKey(latest.key, recipient.public_key_jwk);
+            const { error: insertError } = await supabase.from('room_key_shares').insert({
+              room_id: room.id,
+              user_id: member.user_id,
+              key_version: latest.version,
+              wrapped_room_key: wrapped.wrapped_room_key,
+              iv: wrapped.iv,
+              created_by: session.user.id,
+            });
+            if (!insertError) {
+              createdCount += 1;
+            }
+          }
+        }
+
+        if (createdCount > 0) {
+          await loadRoomKeys();
+        }
+      } catch (e) {
+        console.error('Background key sync error:', e);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      void autoSync();
+    }, 2000); // 2s delay after updates to avoid blocking the main UI thread
+
+    return () => clearTimeout(timer);
+  }, [rooms, profiles, roomKeys, members, session.user.id, loadRoomKeys]);
+
   useEffect(() => {
     if (!activeRoom) return;
     if (channelRef.current) supabase.removeChannel(channelRef.current);
@@ -497,6 +569,9 @@ function AppShell({
       .on('postgres_changes', { event: '*', schema: 'public', table: 'message_reactions' }, () => {
         void loadMessages();
       })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'room_key_shares', filter: `user_id=eq.${session.user.id}` }, () => {
+        void loadRoomKeys();
+      })
       .on('presence', { event: 'sync' }, () => {
         setPresence(channel.presenceState() as PresenceState);
       })
@@ -510,7 +585,8 @@ function AppShell({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [activeRoom, decryptRows, loadMessages, profile.username, session.user.id]);
+  }, [activeRoom, decryptRows, loadMessages, loadRoomKeys, profile.username, session.user.id]);
+
 
   async function sendMessage(event: React.FormEvent) {
     event.preventDefault();
@@ -583,6 +659,10 @@ function AppShell({
               <div className="font-mono text-sm text-cyan-100">{profile.display_name}</div>
               <div className="text-xs text-slate-400">@{profile.username} / {profile.role}</div>
             </div>
+            <Button variant="ghost" onClick={onLock} title="Lock Vault">
+              <Shield size={16} className="text-cyan-400" />
+              <span className="hidden sm:inline text-cyan-400">Lock</span>
+            </Button>
             <Button variant="ghost" onClick={onSignOut} title="Sign out">
               <LogOut size={16} />
               <span className="hidden sm:inline">Exit</span>
@@ -591,48 +671,53 @@ function AppShell({
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-7xl gap-4 p-4 lg:grid-cols-[260px_minmax(0,1fr)_340px]">
-        <Panel className="overflow-hidden">
-          <div className="border-b border-cyan-400/15 p-4">
-            <div className="flex items-center gap-2 font-mono text-sm uppercase tracking-[0.2em] text-cyan-300">
-              <Radio size={16} /> Rooms
+      <main className="mx-auto grid max-w-7xl gap-6 p-4 lg:grid-cols-[280px_minmax(0,1fr)_320px]">
+        <Panel className="overflow-hidden flex flex-col h-[85vh]">
+          <div className="border-b border-cyan-400/20 bg-cyan-950/20 p-4 relative">
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50" />
+            <div className="flex items-center gap-2 font-mono text-sm uppercase tracking-[0.2em] text-cyan-300 glow-text-cyan">
+              <Radio size={16} className="animate-pulse" /> Channels
             </div>
           </div>
-          <div className="grid gap-1 p-2">
+          <div className="grid gap-1 p-3 flex-1 overflow-y-auto">
             {rooms.map((room) => (
               <button
                 key={room.id}
                 onClick={() => setActiveRoomId(room.id)}
                 className={cx(
-                  'rounded px-3 py-3 text-left transition',
-                  activeRoom?.id === room.id ? 'bg-cyan-300 text-slate-950' : 'text-cyan-100 hover:bg-cyan-300/10',
+                  'rounded px-4 py-3 text-left transition group relative overflow-hidden',
+                  activeRoom?.id === room.id ? 'bg-cyan-900/40 border border-cyan-400/30 shadow-[inset_0_0_15px_rgba(34,211,238,0.1)]' : 'text-cyan-100/70 border border-transparent hover:bg-cyan-900/20 hover:border-cyan-400/10',
                 )}
               >
-                <div className="font-mono text-sm font-bold"># {room.name}</div>
-                <div className="truncate text-xs opacity-70">{room.description || 'secure room'}</div>
+                {activeRoom?.id === room.id && <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-cyan-400 glow-border-cyan" />}
+                <div className={cx('font-mono text-sm font-bold tracking-wide', activeRoom?.id === room.id ? 'text-cyan-300 glow-text-cyan' : 'group-hover:text-cyan-200')}># {room.name}</div>
+                <div className="truncate text-xs opacity-60 mt-1">{room.description || 'secure channel'}</div>
               </button>
             ))}
-            {rooms.length === 0 && <div className="p-3 text-sm text-slate-400">No rooms yet. Create one as admin.</div>}
+            {rooms.length === 0 && <div className="p-3 text-sm font-mono text-cyan-500/50 uppercase tracking-widest text-center mt-4">No Secure Channels</div>}
           </div>
         </Panel>
 
-        <Panel className="flex min-h-[72vh] flex-col overflow-hidden">
-          <div className="border-b border-cyan-400/15 p-4">
+        <Panel className="flex h-[85vh] flex-col overflow-hidden relative">
+          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50" />
+          <div className="border-b border-cyan-400/20 bg-cyan-950/20 p-4">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <h2 className="font-mono text-xl font-bold text-white"># {activeRoom?.name || 'no-room'}</h2>
-                <p className="text-sm text-slate-400">
-                  {latestKey ? `key v${latestKey.version} loaded` : 'waiting for a room key share'}
+                <h2 className="font-mono text-xl font-bold text-white glow-text-cyan uppercase tracking-widest">
+                  {activeRoom?.name ? `// ${activeRoom.name}` : '// UNAUTHORIZED'}
+                </h2>
+                <p className="text-xs font-mono text-cyan-200/50 uppercase tracking-widest mt-1">
+                  {latestKey ? `ENC_KEY_V${latestKey.version} [ACTIVE]` : 'WAITING FOR SYNC...'}
                 </p>
               </div>
-              <div className="flex items-center gap-2 rounded border border-emerald-400/20 bg-emerald-500/10 px-3 py-2 font-mono text-xs text-emerald-200">
-                <Activity size={14} />
-                {presenceList.length + 1} online
+              <div className="flex items-center gap-2 rounded border border-emerald-400/30 bg-emerald-950/40 px-3 py-1 font-mono text-xs text-emerald-300 tracking-widest shadow-[0_0_10px_rgba(52,211,153,0.1)]">
+                <Activity size={14} className="animate-pulse" />
+                {presenceList.length + 1} ON
               </div>
             </div>
           </div>
 
-          <div className="flex-1 space-y-3 overflow-y-auto p-4">
+          <div className="flex-1 space-y-4 overflow-y-auto p-5 scroll-smooth">
             {messages.map((message) => {
               const sender = profiles[message.sender_id];
               const mine = message.sender_id === session.user.id;
@@ -640,23 +725,25 @@ function AppShell({
                 <article
                   key={message.id}
                   className={cx(
-                    'rounded border p-3',
-                    mine ? 'border-cyan-400/30 bg-cyan-400/10' : 'border-slate-700 bg-slate-950/60',
+                    'rounded-lg border p-4 shadow-sm transition-all hover:shadow-md backdrop-blur-md',
+                    mine ? 'border-cyan-400/30 bg-cyan-950/30 ml-8' : 'border-slate-700/50 bg-slate-900/50 mr-8',
                   )}
                 >
-                  <div className="mb-2 flex items-center justify-between gap-3">
+                  <div className="mb-3 flex items-center justify-between gap-3 border-b border-slate-700/50 pb-2">
                     <div className="flex items-center gap-2">
                       <span
-                        className="size-3 rounded-full"
-                        style={{ backgroundColor: sender?.avatar_color || '#22d3ee' }}
+                        className="size-2.5 rounded-full shadow-[0_0_5px_currentColor]"
+                        style={{ backgroundColor: sender?.avatar_color || '#22d3ee', color: sender?.avatar_color || '#22d3ee' }}
                       />
-                      <span className="font-mono text-sm text-cyan-100">@{sender?.username || 'unknown'}</span>
+                      <span className="font-mono text-sm font-semibold text-cyan-200 tracking-wide">
+                        {mine ? 'YOU' : `@${sender?.username || 'UNKNOWN'}`}
+                      </span>
                     </div>
-                    <time className="font-mono text-xs text-slate-500">
-                      {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    <time className="font-mono text-xs text-slate-500 tracking-widest">
+                      {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                     </time>
                   </div>
-                  <p className={cx('whitespace-pre-wrap break-words text-sm leading-6', message.failed && 'text-rose-200')}>
+                  <p className={cx('whitespace-pre-wrap break-words text-sm leading-relaxed text-slate-200 font-sans tracking-wide', message.failed && 'text-rose-300')}>
                     {message.plaintext}
                   </p>
                   <div className="mt-3 flex flex-wrap gap-2">
@@ -666,7 +753,7 @@ function AppShell({
                         <button
                           key={reaction}
                           onClick={() => void reactToMessage(message.id, reaction)}
-                          className="rounded border border-cyan-400/15 bg-slate-950 px-2 py-1 font-mono text-xs text-cyan-100 hover:bg-cyan-300/10"
+                          className="rounded border border-cyan-400/20 bg-slate-950/80 px-2 py-1 font-mono text-xs text-cyan-100/70 hover:bg-cyan-900/50 hover:text-cyan-100 hover:border-cyan-400/40 transition"
                         >
                           {reaction} {count > 0 ? count : ''}
                         </button>
@@ -677,56 +764,60 @@ function AppShell({
               );
             })}
             {messages.length === 0 && (
-              <div className="grid h-full place-items-center text-center text-slate-400">
-                <div>
-                  <MessageSquare className="mx-auto mb-3 text-cyan-300" />
-                  <p className="font-mono">No decrypted traffic yet.</p>
+              <div className="grid h-full place-items-center text-center text-slate-500">
+                <div className="opacity-50">
+                  <MessageSquare className="mx-auto mb-4 text-cyan-500/30 animate-pulse" size={48} />
+                  <p className="font-mono tracking-[0.2em] uppercase text-sm">No transmissions found</p>
                 </div>
               </div>
             )}
           </div>
 
-          <div className="border-t border-cyan-400/15 p-4">
-            <div className="mb-2 h-5 text-xs text-slate-400">
-              {typingList.length > 0 ? `${typingList.join(', ')} typing...` : ' '}
+          <div className="border-t border-cyan-400/20 bg-cyan-950/10 p-4 relative">
+            <div className="mb-2 h-4 text-xs font-mono tracking-widest text-cyan-500/70 uppercase">
+              {typingList.length > 0 ? `> ${typingList.join(', ')} typing...` : '> READY'}
             </div>
-            <form className="flex gap-2" onSubmit={sendMessage}>
+            <form className="flex gap-3" onSubmit={sendMessage}>
               <input
-                className="min-w-0 flex-1 rounded border border-cyan-400/20 bg-slate-950 px-3 font-mono text-sm text-cyan-50 outline-none focus:border-cyan-300"
+                className="min-w-0 flex-1 rounded-md border border-cyan-400/30 bg-slate-950/80 px-4 py-2 font-mono text-sm text-cyan-50 outline-none focus:border-cyan-300/80 focus:shadow-[0_0_15px_rgba(34,211,238,0.2)] transition placeholder:text-slate-600"
                 value={draft}
                 onChange={(event) => void handleTyping(event.target.value)}
-                placeholder={latestKey ? 'Encrypt and transmit...' : 'Room key required'}
+                placeholder={latestKey ? 'Encrypt and transmit...' : 'AWAITING CIPHER KEY'}
                 disabled={!latestKey}
               />
               <Button type="submit" disabled={!latestKey || !draft.trim()}>
-                <Send size={16} />
+                <Send size={16} /> <span className="hidden sm:inline">SEND</span>
               </Button>
             </form>
           </div>
         </Panel>
 
-        <aside className="grid gap-4 content-start">
-          <Panel className="p-4">
-            <div className="mb-3 flex items-center gap-2 font-mono text-sm uppercase tracking-[0.2em] text-cyan-300">
-              <Users size={16} /> Members
+        <aside className="grid gap-6 content-start h-[85vh] overflow-y-auto pr-1">
+          <Panel className="p-4 relative">
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50" />
+            <div className="mb-4 flex items-center gap-2 font-mono text-sm uppercase tracking-[0.2em] text-cyan-300 glow-text-cyan">
+              <Users size={16} className="animate-pulse" /> Operatives
             </div>
             <div className="grid gap-2">
               {members.map((member) => (
-                <div key={member.user_id} className="flex items-center justify-between rounded border border-cyan-400/10 bg-slate-950/60 px-3 py-2">
+                <div key={member.user_id} className="flex items-center justify-between rounded border border-cyan-400/10 bg-slate-950/60 px-3 py-2 hover:border-cyan-400/30 transition">
                   <div>
-                    <div className="font-mono text-sm text-cyan-100">@{profiles[member.user_id]?.username || 'loading'}</div>
-                    <div className="text-xs text-slate-500">{member.active ? 'active' : 'removed'}</div>
+                    <div className="font-mono text-sm text-cyan-200">@{profiles[member.user_id]?.username || 'loading'}</div>
+                    <div className={cx("text-[10px] font-mono tracking-widest uppercase mt-1", member.active ? 'text-emerald-400/70' : 'text-rose-400/70')}>
+                      [{member.active ? 'online' : 'terminated'}]
+                    </div>
                   </div>
                   {member.active && profile.role === 'admin' && member.user_id !== session.user.id && (
                     <button
-                      className="font-mono text-xs text-rose-200 hover:text-rose-100"
+                      className="font-mono text-xs text-rose-300/50 hover:text-rose-200 uppercase tracking-widest transition"
                       onClick={() => void removeMember(member)}
                     >
-                      remove
+                      revoke
                     </button>
                   )}
                 </div>
               ))}
+              {members.length === 0 && <div className="text-xs font-mono text-slate-500 uppercase tracking-widest text-center mt-2">NO DATA</div>}
             </div>
           </Panel>
 
@@ -735,7 +826,6 @@ function AppShell({
               profile={profile}
               session={session}
               rooms={rooms}
-              roomKeys={roomKeys}
               onRefresh={() => setAdminRefresh((value) => value + 1)}
               onStatus={onStatus}
             />
@@ -792,14 +882,12 @@ function AdminPanel({
   profile,
   session,
   rooms,
-  roomKeys,
   onRefresh,
   onStatus,
 }: {
   profile: Profile;
   session: Session;
   rooms: Room[];
-  roomKeys: RoomKeyCache;
   onRefresh: () => void;
   onStatus: (status: Status) => void;
 }) {
@@ -898,55 +986,6 @@ function AdminPanel({
     }
   }
 
-  async function syncRoomKeys() {
-    setBusy(true);
-    try {
-      const { data: memberRows, error: membersError } = await supabase.from('room_members').select('*').eq('active', true);
-      if (membersError) throw membersError;
-      const { data: profileRows, error: profilesError } = await supabase.from('profiles').select('*');
-      if (profilesError) throw profilesError;
-      const { data: shareRows, error: sharesError } = await supabase.from('room_key_shares').select('*');
-      if (sharesError) throw sharesError;
-
-      const profileMap = Object.fromEntries(((profileRows || []) as Profile[]).map((item) => [item.id, item]));
-      const shareSet = new Set(
-        ((shareRows || []) as RoomKeyShare[]).map((share) => `${share.room_id}:${share.user_id}:${share.key_version}`),
-      );
-
-      let created = 0;
-      for (const room of rooms) {
-        const latest = latestRoomKey(roomKeys[room.id]);
-        if (!latest) continue;
-
-        const roomMembers = ((memberRows || []) as RoomMember[]).filter((member) => member.room_id === room.id);
-        for (const member of roomMembers) {
-          const shareKey = `${room.id}:${member.user_id}:${latest.version}`;
-          const recipient = profileMap[member.user_id];
-          if (shareSet.has(shareKey) || !recipient?.public_key_jwk) continue;
-
-          const wrapped = await wrapRoomKey(latest.key, recipient.public_key_jwk);
-          const { error: insertError } = await supabase.from('room_key_shares').insert({
-            room_id: room.id,
-            user_id: member.user_id,
-            key_version: latest.version,
-            wrapped_room_key: wrapped.wrapped_room_key,
-            iv: wrapped.iv,
-            created_by: session.user.id,
-          });
-          if (insertError) throw insertError;
-          created += 1;
-        }
-      }
-
-      onStatus({ tone: 'ok', text: `Key sync complete. Created ${created} missing shares.` });
-      onRefresh();
-    } catch (error) {
-      onStatus({ tone: 'error', text: error instanceof Error ? error.message : 'Key sync failed.' });
-    } finally {
-      setBusy(false);
-    }
-  }
-
   return (
     <Panel className="p-4">
       <div className="mb-4 flex items-center gap-2 font-mono text-sm uppercase tracking-[0.2em] text-cyan-300">
@@ -1000,10 +1039,6 @@ function AdminPanel({
           </div>
         </div>
       )}
-
-      <Button variant="ghost" onClick={syncRoomKeys} disabled={busy}>
-        <RefreshCw size={16} /> Sync missing keys
-      </Button>
     </Panel>
   );
 }
@@ -1013,6 +1048,20 @@ export default function App() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [identity, setIdentity] = useState<CryptoIdentity | null>(null);
   const [status, setStatus] = useState<Status>(null);
+
+  // Tab-switch auto-lock security feature
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        setIdentity(null);
+        setStatus({ tone: 'info', text: 'Vault auto-locked for security.' });
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
   const loadProfile = useCallback(async (nextSession: Session | null) => {
     if (!nextSession) {
@@ -1095,11 +1144,16 @@ export default function App() {
 
   return (
     <>
+      <div className="scanlines" />
       <AppShell
         session={session}
         profile={profile}
         identity={identity}
         onSignOut={() => void signOut()}
+        onLock={() => {
+          setIdentity(null);
+          setStatus({ tone: 'info', text: 'Vault locked manually.' });
+        }}
         onStatus={setStatus}
       />
       <FloatingStatus status={status} />

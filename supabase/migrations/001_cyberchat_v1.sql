@@ -353,3 +353,9 @@ with check (
 create policy "Users remove their reactions"
 on public.message_reactions for delete
 using (user_id = auth.uid());
+
+-- Enable Realtime replication for dynamic updates
+alter publication supabase_realtime add table public.messages;
+alter publication supabase_realtime add table public.message_reactions;
+alter publication supabase_realtime add table public.room_key_shares;
+

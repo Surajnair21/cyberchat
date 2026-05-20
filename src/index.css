@@ -4,8 +4,11 @@
 
 :root {
   color-scheme: dark;
-  font-family: Inter, system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   background: #020617;
+  --glow-cyan: rgba(34, 211, 238, 0.5);
+  --glow-emerald: rgba(52, 211, 153, 0.5);
+  --glow-rose: rgba(244, 114, 182, 0.5);
 }
 
 * {
@@ -17,23 +20,96 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background: #020617;
+  color: #e2e8f0;
+  overflow-x: hidden;
 }
 
-button,
-input {
+button, input {
   font: inherit;
 }
 
-.bg-grid {
-  background:
-    linear-gradient(rgba(34, 211, 238, 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(34, 211, 238, 0.055) 1px, transparent 1px),
-    radial-gradient(circle at top left, rgba(20, 184, 166, 0.14), transparent 32rem),
-    radial-gradient(circle at bottom right, rgba(244, 114, 182, 0.08), transparent 28rem),
-    #020617;
-  background-size: 28px 28px, 28px 28px, auto, auto, auto;
+/* Custom Scrollbar for a sleek look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(2, 6, 23, 0.5);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(34, 211, 238, 0.2);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 211, 238, 0.4);
 }
 
 ::selection {
   background: rgba(34, 211, 238, 0.35);
+}
+
+/* Background Grids */
+.bg-grid {
+  background:
+    linear-gradient(rgba(34, 211, 238, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.05) 1px, transparent 1px),
+    radial-gradient(circle at 15% 50%, rgba(20, 184, 166, 0.1), transparent 40rem),
+    radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.08), transparent 35rem),
+    #020617;
+  background-size: 32px 32px, 32px 32px, auto, auto, auto;
+  position: relative;
+}
+
+/* CRT Scanline Overlay */
+.scanlines::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 100;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Glassmorphism Panel */
+.glass-panel {
+  background: rgba(2, 6, 23, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(34, 211, 238, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), 0 0 15px 0 rgba(34, 211, 238, 0.05) inset;
+}
+
+/* Glow Effects */
+.glow-text-cyan {
+  text-shadow: 0 0 10px var(--glow-cyan);
+}
+.glow-border-cyan {
+  box-shadow: 0 0 10px var(--glow-cyan), inset 0 0 10px var(--glow-cyan);
+}
+
+/* Animations */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.02); }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes glitch {
+  0% { transform: translate(0) }
+  20% { transform: translate(-2px, 2px) }
+  40% { transform: translate(-2px, -2px) }
+  60% { transform: translate(2px, 2px) }
+  80% { transform: translate(2px, -2px) }
+  100% { transform: translate(0) }
+}
+.animate-glitch:hover {
+  animation: glitch 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
 }
